@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ * Special fieldgroup formatter for Primary Field.
+ */
+
+/**
+ * Implements hook_field_group_formatter_info().
+ */
+function primary_field_field_group_formatter_info() {
+  return array(
+    'display' => array(
+      'primary-field' => array(
+        'label' => t('Primary Field'),
+        'description' => t('This fieldgroup will display the first field that has content and hide the rest.'),
+        'instance_settings' => array('classes' => ''),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_group_pre_render().
+ */
+function primary_field_field_group_pre_render(&$element, $group, &$form) {
+  // We only process the 'primary-field' group type.
+  if ($group->format_type != 'primary-field') {
+    return;
+  }
+
+  // Order fields by weight.
+  uasort($element, 'element_sort');
+  // Remove all elements except for first field that has content.
+  foreach ($element as $key => $field) {
+    if (!empty($field)) {
+      $element = array_intersect_key($element, array($key => $field));
+      // Add active primary field field class to group.
+      $group->format_settings['instance_settings']['classes'] .= ' primary-field-active-' . drupal_html_class($field['#field_name']);
+      break;
+    }
+  }
+
+  $element['#prefix'] = '<div class="field-group-format ' . $group->format_settings['instance_settings']['classes'] . '">';
+  $element['#suffix'] = '</div>';
+}
+
+/**
+ * Store the field name used as primary field in the field group.
+ */
+function primary_field_preprocess_node(&$variables) {
+  if (isset($variables['elements']['#groups']['group_primary_field']->children)) {
+    $variables['primary_field'] = reset($variables['elements']['#groups']['group_primary_field']->children);
+  }
+}

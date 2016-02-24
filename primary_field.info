@@ -1,1 +1,4 @@
 name = Primary Field
+description = Fieldgroup formatter to display only the first field that has content in a group
+core = 7.x
+dependencies[] = field_group

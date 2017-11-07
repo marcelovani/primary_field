@@ -35,7 +35,8 @@ function primary_field_field_group_pre_render(&$element, $group, &$form) {
     if (!empty($field)) {
       $element = array_intersect_key($element, array($key => $field));
       // Add active primary field field class to group.
-      $group->format_settings['instance_settings']['classes'] .= ' primary-field-active-' . drupal_html_class($field['#field_name']);
+      $field_name = isset($field['#field_name']) ? $field['#field_name'] : $key;
+      $group->format_settings['instance_settings']['classes'] .= ' primary-field-active-' . drupal_html_class($field_name);
       break;
     }
   }
